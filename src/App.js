@@ -1,25 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 function App() {
+  const [tech, setTech] = useState([]);
+  const [newTech, setNewTech] = useState('');
+
+  const handleAdd = useCallback(() => {
+    setTech([...tech, newTech]);
+    setNewTech('');
+  }, [newTech, tech]);
+
+  useEffect(() => {
+    const techExists = localStorage.getItem('tech');
+
+    if (techExists) setTech(JSON.parse(techExists));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tech', JSON.stringify(tech));
+  }, [tech]);
+
+  const techSize = useMemo(() => tech.length, [tech]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ul>
+        {tech.map(t => (
+          <li key={t}>{t}</li>
+        ))}
+      </ul>
+      <span>Você tem {techSize} tecnologias.</span>
+      <br />
+      <br />
+      <input
+        type="text"
+        onChange={e => setNewTech(e.target.value)}
+        value={newTech}
+      />
+      <button onClick={handleAdd} type="button">
+        Adicionar
+      </button>
+    </>
   );
 }
 
